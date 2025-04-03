@@ -6,6 +6,7 @@ pub enum HeaderKey {
     UserAgent,
     Authorization,
     Host,
+    AcceptCharset,
 }
 
 impl HeaderKey {
@@ -17,6 +18,7 @@ impl HeaderKey {
             HeaderKey::UserAgent => "User-Agent",
             HeaderKey::Authorization => "Authorization",
             HeaderKey::Host => "Host",
+            HeaderKey::AcceptCharset => "Accept-Charset",
         }
     }
 }
@@ -48,6 +50,7 @@ impl Into<&str> for HeaderKey {
     }
 }
 
+#[derive(Clone)]
 pub struct Headers {
     headers: HashMap<String, String>,
 }
@@ -66,9 +69,18 @@ impl Headers {
     pub fn values(&self) -> impl Iterator<Item = &String> {
         self.headers.values()
     }
-    // 添加请求头
-    pub fn add(&mut self, key: &str, value: &str) {
-        self.headers.insert(key.to_string(), value.to_string());
+    /// 添加请求头
+    /// 如果存在则不添加
+    pub fn add(&mut self, key: String, value: String) {
+        if !self.headers.contains_key(&key) {
+            self.headers.insert(key, value.to_string());
+        }
+    }
+
+    /// 不管是否存在都添加请求头
+    /// 如果存在则覆盖
+    pub fn set(&mut self, key: String, value: String) {
+        self.headers.insert(key, value.to_string());
     }
 
     // 获取请求头
@@ -91,6 +103,21 @@ impl Headers {
     }
 }
 
+impl Default for Headers {
+    fn default() -> Self {
+        let mut header = Headers::new();
+        header.add("User-Agent".to_string(), "rcurl/1.0".to_string());
+        header.add("Accept".to_string(), "*/*".to_string());
+        header.add("Connection".to_string(), "close".to_string());
+        header.add(
+            "Accept-Language".to_string(),
+            "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,en-GB;q=0.6".to_string(),
+        );
+        header.add(HeaderKey::AcceptCharset.into(), "charset=utf8".to_string());
+        header
+    }
+}
+
 impl<'a> IntoIterator for &'a Headers {
     type Item = (&'a String, &'a String);
     type IntoIter = std::collections::hash_map::Iter<'a, String, String>;
@@ -100,41 +127,8 @@ impl<'a> IntoIterator for &'a Headers {
     }
 }
 
-pub struct HeaderBuilder {
-    headers: Headers,
-}
-
-impl HeaderBuilder {
-    pub fn build(key: &str, value: &str) -> Self {
-        let mut headers = Headers::new();
-        headers.add(key, value);
-        HeaderBuilder { headers }
-    }
-
-    pub fn insert(&mut self, key: &str, value: &str) -> &mut Self {
-        self.headers.add(key, value);
-        self
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    #[test]
-    fn test_header() {
-        let mut builder = HeaderBuilder::build(HeaderKey::Accept.into(), "text/html");
-        builder
-            .insert(HeaderKey::ContentType.into(), "application/json")
-            .insert(HeaderKey::UserAgent.into(), "rcurl/1.0");
-
-        let headers = builder.headers.to_string();
-        assert!(headers.contains("Accept: text/html"));
-        assert!(headers.contains("Content-Type: application/json"));
-        assert!(headers.contains("User-Agent: rcurl/1.0"));
-        println!("{headers}");
-    }
-
     // 自定义迭代器实现
     struct MyIterator {
         current: usize,

@@ -1,7 +1,7 @@
-use super::headers::Headers;
+use super::{Method, headers::Headers, url::Url};
 
 pub struct Request {
-    pub url: String,
+    url: Url,
     pub method: String,
     pub headers: Headers,
     pub body: Vec<u8>,
@@ -9,11 +9,20 @@ pub struct Request {
 }
 
 impl Request {
-    pub fn to_data(&self) -> Vec<u8> {
+    pub fn build(url: &str, method: Method) -> Request {
+        Request {
+            url: url.into(),
+            method: method.to_string(),
+            headers: Headers::default(),
+            body: Vec::new(),
+            http_version: "1.1".to_string(),
+        }
+    }
+    pub fn to_bytes(&self) -> Vec<u8> {
         let mut data = Vec::new();
         data.extend_from_slice(self.method.as_bytes());
         data.extend_from_slice(b" ");
-        data.extend_from_slice(self.url.as_bytes());
+        data.extend_from_slice(&self.url.get_path().as_bytes());
         data.extend_from_slice(b" HTTP/");
         data.extend_from_slice(self.http_version.as_bytes());
         data.extend_from_slice(b"\r\n");
@@ -27,6 +36,27 @@ impl Request {
         data.extend_from_slice(&self.body);
         data
     }
+
+    pub fn set_header(&mut self, headers: &Headers) {
+        for (key, value) in headers {
+            self.headers.add(key.clone(), value.clone());
+        }
+    }
+
+    pub fn add_header(&mut self, key: String, value: String) {
+        self.headers.add(key, value);
+    }
+    pub fn set(&mut self, key: String, value: String) {
+        self.headers.set(key, value);
+    }
+
+    pub fn set_body(&mut self, body: &[u8]) {
+        self.body = body.to_vec();
+    }
+
+    pub fn addr(&self) -> String {
+        format!("{}", self.url.addr())
+    }
 }
 
 #[cfg(test)]
@@ -36,18 +66,20 @@ mod test {
     #[test]
     fn test_request() {
         let mut headers = Headers::new();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type".to_string(), "application/json".to_string());
+        headers.add("user_id".to_string(), "1".to_string());
         let request = Request {
-            url: "http://localhost:8080".to_string(),
+            url: "http://localhost:8008".into(),
             method: "GET".to_string(),
             headers,
             body: Vec::new(),
             http_version: "1.1".to_string(),
         };
-        let data = request.to_data();
+        let data = request.to_bytes();
+        println!("{:?}", String::from_utf8_lossy(&data));
         assert_eq!(
             data,
-            b"GET http://localhost:8080 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n"
+            b"GET http://localhost:8008 HTTP/1.1\r\nContent-Type: application/json\r\nuser_id: 1\r\n\r\n"
         );
     }
 }

@@ -13,7 +13,7 @@ fn main() -> Result<()> {
             LevelFilter::Info
         })
         .init();
-    let app = App::new(cli);
+    let mut app = App::new(cli);
     app.run()?;
     Ok(())
 }
