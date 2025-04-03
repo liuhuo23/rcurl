@@ -1,4 +1,3 @@
-use super::headers::HeaderKey;
 use super::request::Request;
 use super::url::Url;
 use super::{Headers, Method};
