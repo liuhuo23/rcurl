@@ -78,6 +78,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: rcurl-*
+          merge-multiple: true
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
