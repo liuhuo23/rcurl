@@ -33,10 +33,10 @@ jobs:
           #   runs-on: ubuntu-latest
           #   target: aarch64-unknown-linux-gnu
           #   artifact_name: rcurl-linux-arm64
-          - os-name: Windows-x86_64
-            runs-on: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact_name: rcurl-windows-amd64.exe
+          # - os-name: Windows-x86_64
+          #   runs-on: windows-latest
+          #   target: x86_64-pc-windows-msvc
+          #   artifact_name: rcurl-windows-amd64.exe
           - os-name: macOS-x86_64
             runs-on: macOS-latest
             target: x86_64-apple-darwin
@@ -60,11 +60,7 @@ jobs:
       - name: Build binary
         run: |
           cargo build --target ${{ matrix.platform.target }} --release
-          if [[ "${{ matrix.platform.artifact_name }}" == *.exe ]]; then
-            mv target/${{ matrix.platform.target }}/release/rcurl.exe ${{ matrix.platform.artifact_name }}
-          else
-            mv target/${{ matrix.platform.target }}/release/rcurl ${{ matrix.platform.artifact_name }}
-          fi
+          mv target/${{ matrix.platform.target }}/release/rcurl ${{ matrix.platform.artifact_name }}
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
