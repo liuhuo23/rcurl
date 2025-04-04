@@ -3,7 +3,7 @@ name: Rust Multi-Platform Build
 on:
   push:
     branches:
-      - main  # 仅在主分支上触发
+      - master  # 仅在主分支上触发
     tags:
       - 'v*'  # 表示任何以 v 开头的标签都会触发工作流
 
