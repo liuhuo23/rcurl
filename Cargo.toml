@@ -1,7 +1,11 @@
 [package]
+categories = ["command-line-utilities"]
 edition = "2024"
+homepage = "https://github.com/liuhuo23/rcurl"
+keywords = ["cli", "request", "beta"]
 name = "rcurl"
-version = "0.1.0"
+repository = "https://github.com/liuhuo23/rcurl"
+version = "0.0.1"
 
 [dependencies]
 anyhow = "1.0.97"
