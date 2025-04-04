@@ -43,27 +43,24 @@ impl<'a> Read for Response<'a> {
 }
 
 impl<'a> Response<'a> {
-    /// 获取响应体内容的不可变引用
-    pub fn body(&self) -> &[u8] {
-        &self.body
-    }
-
     // 从原始字节流解析响应
     pub fn from_bytes(stream: &'a mut TcpStream) -> Result<Response<'a>> {
         let mut reader = BufReader::new(&mut *stream);
-        // 1. 解析状态行
-        let mut status_line = String::new();
-        reader.read_line(&mut status_line)?;
-        let (version, status) = Response::parse_status_lien(&status_line)?;
         // 2. 解析请求头
         let mut headers = Headers::new();
         let mut header_line = String::new();
+        reader.read_line(&mut header_line)?;
+        let (version, status) = Response::parse_status_lien(&header_line)?;
         loop {
             header_line.clear();
             reader.read_line(&mut header_line)?;
+            if header_line.is_empty() {
+                debug!("Header line is empty, skipping");
+                continue;
+            }
 
             if header_line == "\r\n" || header_line.is_empty() {
-                break; // 空行表示请求头结束
+                break;
             }
 
             if let Some((key, value)) = header_line.split_once(':') {

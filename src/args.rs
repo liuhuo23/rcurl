@@ -20,8 +20,14 @@ pub struct Cli {
         value_name = "DATA"
     )]
     pub data: Option<String>,
-    #[arg(short = 't', long, help = "设置请求超时时间", value_name = "TIMEOUT")]
-    pub timeout: Option<u64>,
+    #[arg(
+        short = 't',
+        long,
+        help = "设置请求超时时间",
+        default_value = "20",
+        value_name = "TIMEOUT"
+    )]
+    pub timeout: u64,
     #[arg(
         short = 'c',
         long,

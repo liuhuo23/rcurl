@@ -14,13 +14,14 @@ impl App {
         }
     }
     pub fn run(&mut self) -> Result<()> {
+        self.client.set_timeout(self.cli.timeout);
         let request = self.client.get(&self.cli.url);
         for header in self.cli.headers.iter() {
             let header = header.split(':').collect::<Vec<&str>>();
             if header.len() != 2 {
                 return Err(anyhow::anyhow!("Invalid header format"));
             }
-            request.set(header[0].to_string(), header[1].to_string());
+            request.borrow_mut().set(header[0].to_string(), header[1].to_string());
         }
         let mut response = self.client.execute()?;
         println!("{}", String::from_utf8_lossy(&response.body));
