@@ -70,7 +70,7 @@ mod test {
         println!("{:?}", String::from_utf8_lossy(&data));
         assert_eq!(
             data,
-            b"GET http://localhost:8008 HTTP/1.1\r\nContent-Type: application/json\r\nuser_id: 1\r\n\r\n"
+            b"GET / HTTP/1.1\r\nuser_id: 1\r\nContent-Type: application/json\r\n\r\n"
         );
     }
 }
