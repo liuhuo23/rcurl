@@ -48,6 +48,10 @@ impl Request {
     pub fn addr(&self) -> String {
         format!("{}", self.url.addr())
     }
+
+    pub fn set_headers(&mut self, headers: Headers) {
+        self.headers = headers;
+    }
 }
 
 #[cfg(test)]

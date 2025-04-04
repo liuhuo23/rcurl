@@ -1,11 +1,14 @@
 use super::error::RequestError;
 use super::error::Result;
+use super::headers;
+use super::request;
 use super::request::Request;
 use super::url::Url;
 use super::{Headers, Method};
 use crate::models::response::Response;
 use anyhow::anyhow;
 use log::debug;
+use std::cell::RefCell;
 use std::io::{Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::time::Duration;
@@ -13,7 +16,7 @@ use std::time::Duration;
 pub struct Client {
     stream: Option<TcpStream>,
     timeout: Duration,
-    request: Option<Request>,
+    request: Option<RefCell<Request>>,
 }
 
 impl Client {
@@ -39,57 +42,45 @@ impl Client {
         let url_ = Url::from(url);
         self.connect(url_.addr())?;
         if self.request.is_none() {
-            self.request = Some(Request::build(url, method));
+            self.request = Some(RefCell::new(Request::build(url, method)));
         }
         let host_value = format!("{}", url_.host);
-        let request = self.request.as_mut().unwrap();
-        request.set("Host".to_string(), host_value);
+        self.request.as_ref().unwrap().borrow_mut();
         self.execute()
     }
 
-    /// 读取响应(使用缓冲区方式)
-    fn read_response(&mut self) -> std::io::Result<Vec<u8>> {
-        if let Some(stream) = &mut self.stream {
-            const BUF_SIZE: usize = 1024;
-            let mut buffer = Vec::new();
-            let mut chunk = [0u8; BUF_SIZE];
-            loop {
-                match stream.read(&mut chunk) {
-                    Ok(0) => break, // 读取结束
-                    Ok(n) => {
-                        buffer.extend_from_slice(&chunk[..n]);
-                    }
-                    Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-                    Err(e) => return Err(e),
-                }
-            }
-            Ok(buffer)
-        } else {
-            Err(std::io::Error::new(
-                std::io::ErrorKind::NotConnected,
-                "Not connected to server",
-            ))
-        }
+    /// 设置请求超时时间
+    pub fn set_timeout(&mut self, timeout: u64) {
+        self.timeout = Duration::new(timeout, 0);
     }
-
-    /// 获取 request
-    pub fn get_request(&self) -> Option<&Request> {
-        self.request.as_ref()
-    }
-
     /// get请求
-    pub fn get(&mut self, url: &str) -> &mut Request {
-        self.request = Some(Request::build(url, Method::GET));
+    pub fn get(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        if self.request.is_none() {
+            self.request = Some(RefCell::new(Request::build(
+                &url.host.as_str(),
+                Method::GET,
+            )));
+        }
+        let host_value = format!("{}", url.host);
+        debug!("Host: {}", host_value);
+        let mut header = Headers::default();
+        header.set("Host".to_string(), host_value);
+        self.request
+            .as_mut()
+            .unwrap()
+            .borrow_mut()
+            .set_headers(header);
         self.request.as_mut().unwrap()
     }
 
     /// 执行请求
     pub fn execute(&mut self) -> Result<Response> {
         if let Some(request) = self.request.take() {
-            let addr = request.addr();
+            let addr = request.borrow().addr();
             self.connect(addr)?;
             if let Some(stream) = self.stream.as_mut() {
-                let request_bytes = request.to_bytes();
+                let request_bytes = request.borrow().to_bytes();
                 debug!("Request:\n{}", String::from_utf8_lossy(&request_bytes));
                 match stream.write_all(&request_bytes) {
                     Ok(_) => (),
