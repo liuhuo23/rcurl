@@ -37,15 +37,6 @@ impl Request {
         data
     }
 
-    pub fn set_header(&mut self, headers: &Headers) {
-        for (key, value) in headers {
-            self.headers.add(key.clone(), value.clone());
-        }
-    }
-
-    pub fn add_header(&mut self, key: String, value: String) {
-        self.headers.add(key, value);
-    }
     pub fn set(&mut self, key: String, value: String) {
         self.headers.set(key, value);
     }

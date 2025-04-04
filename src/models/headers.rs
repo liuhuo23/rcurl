@@ -50,7 +50,7 @@ impl Into<&str> for HeaderKey {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Headers {
     headers: HashMap<String, String>,
 }

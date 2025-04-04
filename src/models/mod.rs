@@ -1,6 +1,7 @@
 pub mod client;
 mod dns;
 pub mod error;
+pub mod http_version;
 mod headers;
 mod method;
 mod request;

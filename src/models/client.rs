@@ -1,7 +1,9 @@
+use super::error::RequestError;
+use super::error::Result;
 use super::request::Request;
 use super::url::Url;
 use super::{Headers, Method};
-use anyhow::Result;
+use crate::models::response::Response;
 use anyhow::anyhow;
 use log::debug;
 use std::io::{Read, Write};
@@ -33,7 +35,7 @@ impl Client {
     }
 
     /// 发送请求
-    pub fn send_request(&mut self, url: &str, method: Method) -> Result<Vec<u8>> {
+    pub fn send_request(&mut self, url: &str, method: Method) -> Result<Response> {
         let url_ = Url::from(url);
         self.connect(url_.addr())?;
         if self.request.is_none() {
@@ -41,9 +43,7 @@ impl Client {
         }
         let host_value = format!("{}", url_.host);
         let request = self.request.as_mut().unwrap();
-        let mut header = Headers::default();
-        header.add("Host".to_string(), host_value);
-        request.set_header(&header);
+        request.set("Host".to_string(), host_value);
         self.execute()
     }
 
@@ -84,7 +84,7 @@ impl Client {
     }
 
     /// 执行请求
-    pub fn execute(&mut self) -> Result<Vec<u8>> {
+    pub fn execute(&mut self) -> Result<Response> {
         if let Some(request) = self.request.take() {
             let addr = request.addr();
             self.connect(addr)?;
@@ -94,20 +94,18 @@ impl Client {
                 match stream.write_all(&request_bytes) {
                     Ok(_) => (),
                     Err(e) => {
-                        return Err(anyhow!("Failed to send request: {}", e));
+                        return Err(RequestError::SendRquestError(format!("{e}")));
                     }
-                }
+                };
                 self.request = Some(request);
-                if let Ok(body) = self.read_response() {
-                    return Ok(body);
-                } else {
-                    return Err(anyhow!("Failed to read response"));
-                }
+                let mut response = Response::from_bytes(stream)?;
+                response.get_body()?;
+                Ok(response)
             } else {
-                Err(anyhow!("Not connected to server",))
+                Err(anyhow!("Not connected to server").into())
             }
         } else {
-            Err(anyhow!("No request to execute"))
+            Err(anyhow!("No request to execute").into())
         }
     }
 }
@@ -119,8 +117,9 @@ mod test {
     #[test]
     fn test_client_request_response() -> Result<()> {
         let mut client = Client::new();
-        client.get("http://www.baidu.com");
-        client.execute()?;
+        client.get("http://www.baidu.com/hello");
+        let response = client.execute()?;
+        println!("{}", String::from_utf8_lossy(&response.body));
         Ok(())
     }
 }
