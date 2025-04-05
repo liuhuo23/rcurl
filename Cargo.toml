@@ -15,8 +15,8 @@ log = "0.4.27"
 percent-encoding = "2.3.1"
 thiserror = "2.0.12"
 
-[features]
-# default = ['reqwest']
-default = ['beta']
-
-beta = []
+[profile.release]
+debug = false
+lto = false
+opt-level = 3
+overflow-checks = false
