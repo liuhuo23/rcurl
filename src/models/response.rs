@@ -131,29 +131,4 @@ impl<'a> Response<'a> {
         let status = status.parse::<u16>().context("Invalid status code")?;
         Ok((version.try_into()?, status))
     }
-
-    // // 下载文件到指定路径
-    // pub fn download_to_file(&mut self, path: &str) -> Result<()> {
-    //     use std::fs::File;
-    //     use std::io::Write;
-
-    //     // 确保body已加载
-    //     self.get_body()?;
-    //     let mut file = File::create(path)?;
-    //     file.write_all(&self.body)?;
-    //     Ok(())
-    // }
-
-    // 获取建议的文件名(从Content-Disposition头)
-    // pub fn suggested_filename(&self) -> Option<&str> {
-    //     self.content_disposition
-    //         .as_ref()
-    //         .and_then(|s| s.split("filename=").nth(1))
-    //         .map(|s| s.trim_matches('"'))
-    // }
-
-    // // 获取文件大小(从Content-Length头)
-    // pub fn content_length(&self) -> Option<u64> {
-    //     self.content_length
-    // }
 }
