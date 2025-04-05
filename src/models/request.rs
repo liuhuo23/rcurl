@@ -22,7 +22,7 @@ impl Request {
         let mut data = Vec::new();
         data.extend_from_slice(self.method.as_bytes());
         data.extend_from_slice(b" ");
-        data.extend_from_slice(&self.url.get_path().as_bytes());
+        data.extend_from_slice(self.url.get_path().as_bytes());
         data.extend_from_slice(b" HTTP/");
         data.extend_from_slice(self.http_version.as_bytes());
         data.extend_from_slice(b"\r\n");
@@ -46,7 +46,7 @@ impl Request {
     }
 
     pub fn addr(&self) -> String {
-        format!("{}", self.url.addr())
+        self.url.addr().to_string()
     }
 
     pub fn set_headers(&mut self, headers: Headers) {

@@ -211,7 +211,7 @@ fn resolve_from_hosts(domain: &str) -> Result<Option<Vec<Ipv4Addr>>, String> {
             for &host in &parts[1..] {
                 hosts_map
                     .entry(host.to_string())
-                    .or_insert_with(Vec::new)
+                    .or_default()
                     .push(ip);
             }
         }
@@ -236,7 +236,7 @@ pub fn resolve_domain(domain: &str) -> Result<Vec<Ipv4Addr>, String> {
 
     // 获取系统的 DNS 服务器
     let dns_servers = get_system_dns_servers()?;
-    let dns_server = dns_servers.get(0).ok_or("没有可用的 DNS 服务器")?;
+    let dns_server = dns_servers.first().ok_or("没有可用的 DNS 服务器")?;
 
     // 创建UDP套接字
     let socket = match UdpSocket::bind("0.0.0.0:0") {

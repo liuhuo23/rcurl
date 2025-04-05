@@ -44,9 +44,9 @@ impl TryFrom<&str> for HeaderKey {
     }
 }
 
-impl Into<&str> for HeaderKey {
-    fn into(self) -> &'static str {
-        self.as_str()
+impl From<HeaderKey> for &str {
+    fn from(val: HeaderKey) -> Self {
+        val.as_str()
     }
 }
 
@@ -72,9 +72,7 @@ impl Headers {
     /// 添加请求头
     /// 如果存在则不添加
     pub fn add(&mut self, key: String, value: String) {
-        if !self.headers.contains_key(&key) {
-            self.headers.insert(key, value.to_string());
-        }
+        self.headers.entry(key).or_insert_with(|| value.to_string());
     }
 
     /// 不管是否存在都添加请求头
@@ -152,7 +150,7 @@ mod tests {
     #[test]
     fn test_my_iterator() {
         let mut iter = MyIterator { current: 0, max: 5 };
-        while let Some(value) = iter.next() {
+        for value in iter {
             println!("Value: {}", value);
         }
     }

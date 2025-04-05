@@ -25,7 +25,7 @@ impl App {
                 .borrow_mut()
                 .set(header[0].to_string(), header[1].to_string());
         }
-        let mut response = self.client.execute()?;
+        let response = self.client.execute()?;
         println!("{}", String::from_utf8_lossy(&response.body));
         Ok(())
     }

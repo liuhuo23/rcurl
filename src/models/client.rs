@@ -1,7 +1,5 @@
 use super::error::RequestError;
 use super::error::Result;
-use super::headers;
-use super::request;
 use super::request::Request;
 use super::url::Url;
 use super::{Headers, Method};
@@ -44,7 +42,7 @@ impl Client {
         if self.request.is_none() {
             self.request = Some(RefCell::new(Request::build(url, method)));
         }
-        let host_value = format!("{}", url_.host);
+        let host_value = url_.host.to_string();
         self.request.as_ref().unwrap().borrow_mut();
         self.execute()
     }
@@ -58,11 +56,11 @@ impl Client {
         let url = Url::from(url);
         if self.request.is_none() {
             self.request = Some(RefCell::new(Request::build(
-                &url.host.as_str(),
+                url.host.as_str(),
                 Method::GET,
             )));
         }
-        let host_value = format!("{}", url.host);
+        let host_value = url.host.to_string();
         debug!("Host: {}", host_value);
         let mut header = Headers::default();
         header.set("Host".to_string(), host_value);

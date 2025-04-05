@@ -9,7 +9,7 @@ pub struct Url {
 
 impl Url {
     pub fn addr(&self) -> String {
-        let mut addr = format!("{}", self.host);
+        let mut addr = self.host.to_string();
         if let Some(port) = self.port {
             addr.push_str(&format!(":{}", port));
         } else {
@@ -72,14 +72,14 @@ impl From<&str> for Url {
     }
 }
 
-impl Into<String> for Url {
-    fn into(self) -> String {
-        let mut url = format!("{}://{}", self.scheme, self.host);
-        if let Some(port) = self.port {
+impl From<Url> for String {
+    fn from(val: Url) -> Self {
+        let mut url = format!("{}://{}", val.scheme, val.host);
+        if let Some(port) = val.port {
             url.push_str(&format!(":{}", port));
         }
-        url.push_str(&self.path);
-        if let Some(query) = self.query {
+        url.push_str(&val.path);
+        if let Some(query) = val.query {
             url.push_str(&format!("?{}", query));
         }
         url

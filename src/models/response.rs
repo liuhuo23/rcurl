@@ -2,10 +2,9 @@ use super::Headers;
 use super::error::Result;
 use super::http_version::HttpVersion;
 use anyhow::Context;
-use anyhow::anyhow;
 use log::debug;
 use std::{
-    io::{BufRead, BufReader, Read, Result as IoResult, Write},
+    io::{BufRead, BufReader, Read, Result as IoResult},
     net::TcpStream,
 };
 
@@ -19,7 +18,7 @@ pub struct Response<'a> {
     content_disposition: Option<String>,
 }
 
-impl<'a> Read for Response<'a> {
+impl Read for Response<'_> {
     fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
         // 如果有content_length，确保不会读取超过指定长度
         if let Some(len) = self.content_length {
@@ -78,7 +77,7 @@ impl<'a> Response<'a> {
             headers,
             version,
             status,
-            reader: reader,
+            reader,
             body: Vec::new(),
             content_length,
             content_disposition,
