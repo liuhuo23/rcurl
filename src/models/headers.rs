@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn test_my_iterator() {
-        let mut iter = MyIterator { current: 0, max: 5 };
+        let iter = MyIterator { current: 0, max: 5 };
         for value in iter {
             println!("Value: {}", value);
         }
