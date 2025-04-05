@@ -20,3 +20,8 @@ debug = false
 lto = false
 opt-level = 3
 overflow-checks = false
+
+[dev-dependencies.cargo-husky]
+default-features = false
+features = ["precommit-hook", "run-cargo-clippy"]
+version = "1"
