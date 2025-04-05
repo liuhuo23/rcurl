@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# 运行格式化检查
+cargo fmt -- --check
+
+# 运行静态分析
+cargo clippy -- -D warnings
+
+# 运行单元测试
+cargo test

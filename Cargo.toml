@@ -23,5 +23,5 @@ overflow-checks = false
 
 [dev-dependencies.cargo-husky]
 default-features = false
-features = ["precommit-hook", "run-cargo-clippy"]
+features = ["user-hooks"]
 version = "1"
