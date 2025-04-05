@@ -1,14 +1,8 @@
 #!/bin/bash
 . "$(dirname "$0")/_/husky.sh"
 
-# 运行 clippy fmt
-cargo fmt --manifest-path ./Cargo.toml
-
-if [ $? -ne 0 ]; then
-    echo "rustfmt failed to format the code. Please fix the issues and try again."
-    exit 1
-fi
-
+cargo clippy
+cargo test
 #git add .
 
 # 允许提交
