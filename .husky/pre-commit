@@ -1,6 +1,5 @@
 #!/bin/bash
-
-#pnpm pretty-quick --staged
+. "$(dirname "$0")/_/husky.sh"
 
 # 运行 clippy fmt
 cargo fmt --manifest-path ./Cargo.toml
