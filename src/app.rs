@@ -21,7 +21,9 @@ impl App {
             if header.len() != 2 {
                 return Err(anyhow::anyhow!("Invalid header format"));
             }
-            request.borrow_mut().set(header[0].to_string(), header[1].to_string());
+            request
+                .borrow_mut()
+                .set(header[0].to_string(), header[1].to_string());
         }
         let mut response = self.client.execute()?;
         println!("{}", String::from_utf8_lossy(&response.body));
