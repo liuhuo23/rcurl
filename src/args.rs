@@ -44,4 +44,7 @@ pub struct Cli {
         value_name = "INTERVAL"
     )]
     pub interval: u64,
+
+    #[arg(short = 'f', long, help = "设置请求文件", value_name = "FILE")]
+    pub file: Option<String>,
 }

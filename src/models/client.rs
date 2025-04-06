@@ -54,11 +54,64 @@ impl Client {
     /// get请求
     pub fn get(&mut self, url: &str) -> &RefCell<Request> {
         let url = Url::from(url);
+        let method = Method::GET;
+        let request = self._build_request(url, method);
+        return request;
+    }
+    /// post请求
+    pub fn post(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        let method = Method::POST;
+        let request = self._build_request(url, method);
+        return request;
+    }
+    /// put请求
+    pub fn put(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        let method = Method::PUT;
+        let request = self._build_request(url, method);
+        return request;
+    }
+
+    /// delete请求
+    pub fn delete(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        let method = Method::DELETE;
+        let request = self._build_request(url, method);
+        return request;
+    }
+    /// head请求
+    pub fn head(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        let method = Method::HEAD;
+        let request = self._build_request(url, method);
+        return request;
+    }
+    /// options请求
+    pub fn options(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        let method = Method::OPTIONS;
+        let request = self._build_request(url, method);
+        return request;
+    }
+    /// patch请求
+    pub fn patch(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        let method = Method::PATCH;
+        let request = self._build_request(url, method);
+        return request;
+    }
+    /// trace请求
+    pub fn trace(&mut self, url: &str) -> &RefCell<Request> {
+        let url = Url::from(url);
+        let method = Method::TRACE;
+        let request = self._build_request(url, method);
+        return request;
+    }
+
+    fn _build_request(&mut self, url: Url, method: Method) -> &RefCell<Request> {
         if self.request.is_none() {
-            self.request = Some(RefCell::new(Request::build(
-                url.host.as_str(),
-                Method::GET,
-            )));
+            self.request = Some(RefCell::new(Request::build(url.host.as_str(), method)));
         }
         let host_value = url.host.to_string();
         debug!("Host: {}", host_value);
