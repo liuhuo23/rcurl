@@ -56,21 +56,21 @@ impl Client {
         let url = Url::from(url);
         let method = Method::GET;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
     /// post请求
     pub fn post(&mut self, url: &str) -> &RefCell<Request> {
         let url = Url::from(url);
         let method = Method::POST;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
     /// put请求
     pub fn put(&mut self, url: &str) -> &RefCell<Request> {
         let url = Url::from(url);
         let method = Method::PUT;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
 
     /// delete请求
@@ -78,35 +78,35 @@ impl Client {
         let url = Url::from(url);
         let method = Method::DELETE;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
     /// head请求
     pub fn head(&mut self, url: &str) -> &RefCell<Request> {
         let url = Url::from(url);
         let method = Method::HEAD;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
     /// options请求
     pub fn options(&mut self, url: &str) -> &RefCell<Request> {
         let url = Url::from(url);
         let method = Method::OPTIONS;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
     /// patch请求
     pub fn patch(&mut self, url: &str) -> &RefCell<Request> {
         let url = Url::from(url);
         let method = Method::PATCH;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
     /// trace请求
     pub fn trace(&mut self, url: &str) -> &RefCell<Request> {
         let url = Url::from(url);
         let method = Method::TRACE;
         let request = self._build_request(url, method);
-        return request;
+        request
     }
 
     fn _build_request(&mut self, url: Url, method: Method) -> &RefCell<Request> {
